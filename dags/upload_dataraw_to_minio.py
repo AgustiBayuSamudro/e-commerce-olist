@@ -27,15 +27,18 @@ def upload_csv_to_minio_logic():
         return
 
     for file_name in files:
-        file_path = os.path.join(source_folder, file_name)        
-        object_name = f"data-lake/{file_name}"
+        file_path = os.path.join(source_folder, file_name)       
 
+        clean_name = os.path.splitext(file_name)[0]
+        table_name = clean_name.replace("_dataset", "")
+        
+        object_name = f"data-lake/raw/{table_name}/{file_name}"
         client.fput_object(
             bucket_name,
             object_name,
             file_path
         )
-        print(f"Berhasil diunggah: {file_name} → {bucket_name}/{object_name}")
+        print(f"Berhasil diunggah ke sub-folder: {object_name}")
 
 with DAG(
     dag_id="ingest_olist_to_minio",
