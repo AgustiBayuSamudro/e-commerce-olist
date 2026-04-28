@@ -2,7 +2,8 @@ version: "3.8"
 
 x-airflow-common: &airflow-common
   # Ganti ke 'build: .' jika ingin install Spark di dalam Airflow
-  image: apache/airflow:2.8.1 
+  build:
+    context: ./docker/airflow
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
@@ -73,13 +74,41 @@ services:
 
   airflow-worker:
     <<: *airflow-common
-    command: celery worker
+    command: celery worker  
 
   # Streaming & Storage
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - spark-net
+
+  # Spark
+  spark-master:
+    build:
+      context: ./docker/spark
+    container_name: spark-master
+    # Tambahkan command ini agar menjalankan Master
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    environment:
+      - SPARK_MODE=master
+    ports:
+      - "7077:7077"
+      - "8081:8080"
+    networks:
+      - spark-net
+
+  spark-worker:
+    build:
+      context: ./docker/spark
+    container_name: spark-worker
+    # Tambahkan command ini agar menjalankan Worker yang terhubung ke Master
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    environment:
+      - SPARK_MODE=worker
+    depends_on:
+      - spark-master
     networks:
       - spark-net
 
@@ -108,30 +137,6 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-    networks:
-      - spark-net
-  
-  spark-master:
-    build:
-      context: ./docker/spark
-    container_name: spark-master
-    environment:
-      - SPARK_MODE=master
-    ports:
-      - "7077:7077"
-      - "8081:8080"
-    networks:
-      - spark-net
-
-  spark-worker:
-    build:
-      context: ./docker/spark
-    container_name: spark-worker
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-    depends_on:
-      - spark-master
     networks:
       - spark-net
 
