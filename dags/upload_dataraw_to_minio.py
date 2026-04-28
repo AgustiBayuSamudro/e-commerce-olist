@@ -28,7 +28,7 @@ def upload_csv_to_minio_logic():
 
     for file_name in files:
         file_path = os.path.join(source_folder, file_name)        
-        object_name = f"data-luke/{file_name}"
+        object_name = f"data-lake/{file_name}"
 
         client.fput_object(
             bucket_name,
