@@ -34,4 +34,9 @@ with DAG(
         script_path="/opt/airflow/scripts/bronze/olist_customers_bronze.py"
     )
 
-    process_customers
+    process_categories = spark_task(
+        task_id="bronze_categories", 
+        script_path="/opt/airflow/scripts/bronze/product_category_name_translation.py"
+    )
+
+    process_customers >> process_categories
