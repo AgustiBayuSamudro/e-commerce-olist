@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder \
-    .appName("Olist_Bronze_Category") \
+    .appName("Olist_Bronze_Categories") \
     .getOrCreate()
 
 sc = spark.sparkContext
@@ -18,10 +18,8 @@ df_raw.createOrReplaceTempView("raw_categories")
 df_bronze = spark.sql("""
     SELECT 
         hex(md5((product_category_name))) AS product_category_id,
-        trim(lower(REPLACE(product_category_name, '_', ' '))) AS product_category_name,
-        TRIM(LOWER(REPLACE(product_category_name_english, '_', ' '))) AS product_category_name_english,
-        CAST(now() AS TIMESTAMP) AS created_at,
-        CAST(now() AS TIMESTAMP) AS updated_at
+        trim(lower(product_category_name)) AS product_category_name,
+        TRIM(LOWER(product_category_name_english)) AS product_category_name_english
     FROM raw_categories;
 """)
 
