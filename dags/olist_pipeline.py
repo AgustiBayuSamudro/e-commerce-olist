@@ -8,7 +8,10 @@ def spark_task(task_id, script_path):
         task_id=task_id,
         application=script_path,
         conn_id="spark_default",
-        packages="org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262",
+        retries=2,
+        retry_delay=60,
+        verbose=True,
+        packages="org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262,org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0",
         conf={
             "spark.hadoop.fs.s3a.endpoint": "http://minio:9000",
             "spark.hadoop.fs.s3a.access.key": "minio",
