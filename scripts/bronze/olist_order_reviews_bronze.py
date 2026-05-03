@@ -1,5 +1,4 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import to_json, struct
 
 spark = SparkSession.builder \
     .appName("Olist_Bronze_OrderReviews") \
@@ -26,20 +25,10 @@ df_bronze = spark.sql("""
         review_creation_date,
         review_answer_timestamp
     FROM raw_orderReviews;
-""")
+""").dropDuplicates(["review_id"])
 
 output_path = "s3a://etl-data/data-lake/bronze/orderReview"
-df_bronze.write.mode("overwrite").parquet(output_path)
+df_bronze.write.mode("append").parquet(output_path)
 
 print(f"Berhasil! Data bronze orderReview tersimpan di: {output_path}")
-df_kafka = df_bronze.select(
-    to_json(struct("*")).alias("value")
-)
-df_kafka.write \
-    .format("kafka") \
-    .option("kafka.bootstrap.servers", "kafka:29092") \
-    .option("topic", "topic_order_reviews") \
-    .save()
-
-print("Berhasil kirim ke Kafka (topic_order_reviews)")
 spark.stop()
