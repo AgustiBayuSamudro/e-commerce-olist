@@ -17,14 +17,13 @@ df_raw.createOrReplaceTempView("raw_categories")
 
 df_bronze = spark.sql("""
     SELECT
-        hex(md5((product_category_name))) AS product_category_id,
-        trim(lower(product_category_name)) AS product_category_name,
-        TRIM(LOWER(product_category_name_english)) AS product_category_name_english
+        product_category_name,
+        product_category_name_english
     FROM raw_categories;
-""").dropDuplicates(["product_category_id"])
+""")
 
 output_path = "s3a://etl-data/data-lake/bronze/category"
-df_bronze.write.mode("append").parquet(output_path)
+df_bronze.write.mode("overwrite").parquet(output_path)
 
 print(f"Berhasil! Data bronze category tersimpan di: {output_path}")
 spark.stop()

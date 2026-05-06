@@ -17,20 +17,18 @@ df_raw.createOrReplaceTempView("raw_orderItems")
 
 df_bronze = spark.sql("""
     SELECT
-        TRIM(order_id) AS order_id,
+        order_id,
         order_item_id,
-        TRIM(product_id) AS product_id,
-        TRIM(seller_id) AS seller_id,
+        product_id,
+        seller_id,
         shipping_limit_date,
         price,
-        freight_value,
-        CAST(now() AS TIMESTAMP) AS created_at,
-        CAST(now() AS TIMESTAMP) AS updated_at
+        freight_value
     FROM raw_orderItems;
-""").dropDuplicates(["order_item_id"])
+""")
 
 output_path = "s3a://etl-data/data-lake/bronze/orderItem"
-df_bronze.write.mode("append").parquet(output_path)
+df_bronze.write.mode("overwrite").parquet(output_path)
 
 print(f"Berhasil! Data bronze orderItem tersimpan di: {output_path}")
 spark.stop()

@@ -17,18 +17,18 @@ df_raw.createOrReplaceTempView("raw_orderReviews")
 
 df_bronze = spark.sql("""
     SELECT
-        TRIM(review_id) AS review_id,
-        TRIM(order_id) AS order_id,
+        review_id,
+        order_id,
         review_score,
-        TRIM(LOWER(review_comment_title)) AS review_comment_title,
-        TRIM(LOWER(review_comment_message)) AS review_comment_message,
+        review_comment_title,
+        review_comment_message,
         review_creation_date,
         review_answer_timestamp
     FROM raw_orderReviews;
-""").dropDuplicates(["review_id"])
+""")
 
 output_path = "s3a://etl-data/data-lake/bronze/orderReview"
-df_bronze.write.mode("append").parquet(output_path)
+df_bronze.write.mode("overwrite").parquet(output_path)
 
 print(f"Berhasil! Data bronze orderReview tersimpan di: {output_path}")
 spark.stop()

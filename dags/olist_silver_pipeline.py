@@ -34,7 +34,7 @@ with DAG(
 
     process_customers_silver = spark_task(
         task_id="silver_customers",
-        script_path="/opt/airflow/scripts/silver/olist_customers_silver_stream.py"
+        script_path="/opt/airflow/scripts/silver/olist_customers_silver.py"
     )
 
     process_customers_silver

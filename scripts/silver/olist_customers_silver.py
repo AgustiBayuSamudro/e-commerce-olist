@@ -14,40 +14,34 @@ hadoop_conf.set("fs.s3a.secret.key", "minio123")
 hadoop_conf.set("fs.s3a.path.style.access", "true")
 hadoop_conf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
 
-# 1. Membaca data Parquet dari layer Bronze (MinIO)
 df_bronze = spark.read.parquet("s3a://etl-data/data-lake/bronze/customer")
-
-# 2. Mendaftarkan DataFrame sebagai Temporary View agar bisa diolah via SQL
 df_bronze.createOrReplaceTempView("customers_stream")
 
-# 3. Melakukan transformasi data menggunakan SQL
 df_silver = spark.sql("""
     SELECT
-        customer_id,
-        customer_unique_id,
-        customer_zip_code_prefix,
-        customer_city,
-        customer_state,
-        created_at,
-        updated_at
+        TRIM(customer_id) AS customer_id,
+        TRIM(customer_unique_id) AS customer_unique_id,
+        TRIM(customer_zip_code_prefix) AS customer_zip_code_prefix,
+        TRIM(LOWER(customer_city)) AS customer_city,
+        TRIM(customer_state) AS customer_state,
+        CAST(now() AS TIMESTAMP) AS created_at,
+        CAST(now() AS TIMESTAMP) AS updated_at
     FROM customers_stream
-    WHERE customer_id IS NOT NULL
-""")
+    WHERE customer_id IS NOT NULL;
+""").dropDuplicates(["customer_id"])
 
-# 4. Menulis hasil transformasi langsung ke PostgreSQL (Layer Silver)
-# Tanpa menggunakan fungsi pembungkus atau epoch_id
 print("Memulai pengiriman data ke PostgreSQL...")
 df_silver.write \
     .format("jdbc") \
     .option("url", "jdbc:postgresql://103.196.155.168:5432/dwh_olist") \
-    .option("dbtable", "silver.dim_customers") \
+    .option("dbtable", "silver.customers") \
+    .option("batchsize", "5000") \
     .option("user", "airflow") \
     .option("password", "airflow") \
     .option("driver", "org.postgresql.Driver") \
-    .mode("append") \
+    .option("truncate", "true") \
+    .mode("overwrite") \
     .save()
 
 print("Data berhasil disimpan ke PostgreSQL.")
-
-# Menutup session
 spark.stop()

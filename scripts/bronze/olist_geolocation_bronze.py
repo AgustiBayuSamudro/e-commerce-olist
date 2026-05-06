@@ -17,17 +17,16 @@ df_raw.createOrReplaceTempView("raw_geolocations")
 
 df_bronze = spark.sql("""
     SELECT
-        hex(md5((geolocation_city || geolocation_state))) AS geolocation_id,
         geolocation_zip_code_prefix,
         geolocation_lat,
         geolocation_lng,
         geolocation_city,
         geolocation_state
     FROM raw_geolocations;
-""").dropDuplicates(["geolocation_id"])
+""")
 
 output_path = "s3a://etl-data/data-lake/bronze/geolocation"
-df_bronze.write.mode("append").parquet(output_path)
+df_bronze.write.mode("overwrite").parquet(output_path)
 
 print(f"Berhasil! Data bronze geolocation tersimpan di: {output_path}")
 spark.stop()

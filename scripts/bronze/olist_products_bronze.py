@@ -17,22 +17,20 @@ df_raw.createOrReplaceTempView("raw_products")
 
 df_bronze = spark.sql("""
     select
-        TRIM(product_id) AS product_id,
-        TRIM(LOWER(product_category_name)) AS product_category_name,
+        product_id,
+        product_category_name,
         product_name_lenght,
         product_description_lenght,
         product_photos_qty,
         product_weight_g,
         product_length_cm,
         product_height_cm,
-        product_width_cm ,
-        CAST(now() AS TIMESTAMP) AS created_at,
-        CAST(now() AS TIMESTAMP) AS updated_at
+        product_width_cm
     from raw_products;
-""").dropDuplicates(["product_id"])
+""")
 
 output_path = "s3a://etl-data/data-lake/bronze/product"
-df_bronze.write.mode("append").parquet(output_path)
+df_bronze.write.mode("overwrite").parquet(output_path)
 
 print(f"Berhasil! Data bronze product tersimpan di: {output_path}")
 spark.stop()

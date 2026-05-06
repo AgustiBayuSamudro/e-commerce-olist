@@ -17,19 +17,16 @@ df_raw.createOrReplaceTempView("raw_orderPayments")
 
 df_bronze = spark.sql("""
     SELECT
-        TRIM(order_id) AS order_id,
-        hex(md5((order_id || payment_sequential))) AS order_payment_id,
+        order_id,
         payment_sequential,
-        TRIM(payment_type) AS payment_type,
+        payment_type,
         payment_installments,
-        payment_value,
-        CAST(now() AS TIMESTAMP) AS created_at,
-        CAST(now() AS TIMESTAMP) AS updated_at
+        payment_value
     FROM raw_orderPayments;
-""").dropDuplicates(["order_payment_id"])
+""")
 
 output_path = "s3a://etl-data/data-lake/bronze/orderPayment"
-df_bronze.write.mode("append").parquet(output_path)
+df_bronze.write.mode("overwrite").parquet(output_path)
 
 print(f"Berhasil! Data bronze orderPayment tersimpan di: {output_path}")
 spark.stop()

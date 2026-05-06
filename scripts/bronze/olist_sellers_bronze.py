@@ -17,15 +17,15 @@ df_raw.createOrReplaceTempView("raw_sellers")
 
 df_bronze = spark.sql("""
     SELECT
-        TRIM(seller_id) AS seller_id,
-        TRIM(seller_zip_code_prefix) AS seller_zip_code_prefix,
-        TRIM(LOWER(seller_city)) AS seller_city,
-        TRIM(seller_state) AS seller_state
-	FROM raw_sellers;
-""").dropDuplicates(["seller_id"])
+        seller_id,
+        seller_zip_code_prefix,
+        seller_city,
+        seller_state
+    FROM raw_sellers;
+""")
 
 output_path = "s3a://etl-data/data-lake/bronze/seller"
-df_bronze.write.mode("append").parquet(output_path)
+df_bronze.write.mode("overwrite").parquet(output_path)
 
 print(f"Berhasil! Data bronze seller tersimpan di: {output_path}")
 spark.stop()

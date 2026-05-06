@@ -17,21 +17,19 @@ df_raw.createOrReplaceTempView("raw_orders")
 
 df_bronze = spark.sql("""
     select
-        TRIM(order_id) AS order_id,
-        TRIM(customer_id) AS customer_id,
-        TRIM(LOWER(order_status)) AS order_status,
+        order_id,
+        customer_id,
+        order_status,
         order_purchase_timestamp,
         order_approved_at,
         order_delivered_carrier_date,
         order_delivered_customer_date,
-        order_estimated_delivery_date,
-        CAST(now() AS TIMESTAMP) AS created_at,
-        CAST(now() AS TIMESTAMP) AS updated_at
+        order_estimated_delivery_date
     from raw_orders;
-""").dropDuplicates(["order_id"])
+""")
 
 output_path = "s3a://etl-data/data-lake/bronze/order"
-df_bronze.write.mode("append").parquet(output_path)
+df_bronze.write.mode("overwrite").parquet(output_path)
 
 print(f"Berhasil! Data bronze order tersimpan di: {output_path}")
 
