@@ -16,12 +16,12 @@ df_bronze = spark.read.parquet("s3a://etl-data/data-lake/bronze/customer")
 df_bronze.createOrReplaceTempView("customers_stream")
 
 df_silver = spark.sql("""
-    SELECT
+    SELECT DISTINCT
         TRIM(customer_id) AS customer_id,
         TRIM(customer_unique_id) AS customer_unique_id,
         TRIM(customer_zip_code_prefix) AS customer_zip_code_prefix,
         TRIM(LOWER(customer_city)) AS customer_city,
-        TRIM(customer_state) AS customer_state,
+        TRIM(UPPER(customer_state)) AS customer_state,
         CAST(now() AS TIMESTAMP) AS created_at,
         CAST(now() AS TIMESTAMP) AS updated_at
     FROM customers_stream

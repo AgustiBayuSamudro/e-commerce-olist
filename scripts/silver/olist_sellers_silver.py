@@ -18,7 +18,7 @@ df_bronze = spark.read.parquet("s3a://etl-data/data-lake/bronze/seller")
 df_bronze.createOrReplaceTempView("sellers_stream")
 
 df_silver = spark.sql("""
-    SELECT
+    SELECT DISTINCT
         TRIM(seller_id) AS seller_id,
         TRIM(seller_zip_code_prefix) AS seller_zip_code_prefix,
         TRIM(LOWER(seller_city)) AS seller_city,

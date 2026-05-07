@@ -18,7 +18,7 @@ df_bronze = spark.read.parquet("s3a://etl-data/data-lake/bronze/geolocation")
 df_bronze.createOrReplaceTempView("geolocation_stream")
 
 df_silver = spark.sql("""
-    SELECT
+    SELECT DISTINCT
         hex(md5((geolocation_city || geolocation_state))) AS geolocation_id,
         geolocation_zip_code_prefix,
         geolocation_lat,

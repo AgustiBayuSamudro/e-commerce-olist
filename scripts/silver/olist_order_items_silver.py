@@ -18,7 +18,7 @@ df_bronze = spark.read.parquet("s3a://etl-data/data-lake/bronze/orderItem")
 df_bronze.createOrReplaceTempView("orderItems_stream")
 
 df_silver = spark.sql("""
-    SELECT
+    SELECT DISTINCT
         TRIM(order_id) AS order_id,
         order_item_id,
         TRIM(product_id) AS product_id,
@@ -37,7 +37,7 @@ print("Memulai pengiriman data ke MinIO (Silver Layer)...")
 df_silver.write \
     .format("parquet") \
     .mode("overwrite") \
-    .save("s3a://etl-data/data-lake/silver/orderItems")
+    .save("s3a://etl-data/data-lake/silver/orderItem")
 
 print("Data berhasil disimpan ke MinIO (Silver Layer).")
 spark.stop()

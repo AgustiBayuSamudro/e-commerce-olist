@@ -18,7 +18,7 @@ df_bronze = spark.read.parquet("s3a://etl-data/data-lake/bronze/product")
 df_bronze.createOrReplaceTempView("products_stream")
 
 df_silver = spark.sql("""
-    select
+    select DISTINCT
         TRIM(product_id) AS product_id,
         TRIM(LOWER(product_category_name)) AS product_category_name,
         product_name_lenght,

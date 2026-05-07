@@ -18,7 +18,7 @@ df_bronze = spark.read.parquet("s3a://etl-data/data-lake/bronze/orderPayment")
 df_bronze.createOrReplaceTempView("orderPayments_stream")
 
 df_silver = spark.sql("""
-    SELECT
+    SELECT DISTINCT
         TRIM(order_id) AS order_id,
         hex(md5((order_id || payment_sequential))) AS order_payment_id,
         payment_sequential,

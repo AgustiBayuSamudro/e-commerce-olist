@@ -18,7 +18,7 @@ df_bronze = spark.read.parquet("s3a://etl-data/data-lake/bronze/orderReview")
 df_bronze.createOrReplaceTempView("orderReviews_stream")
 
 df_silver = spark.sql("""
-    SELECT
+    SELECT DISTINCT
         TRIM(review_id) AS review_id,
         TRIM(order_id) AS order_id,
         review_score,

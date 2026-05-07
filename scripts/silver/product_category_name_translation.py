@@ -18,7 +18,7 @@ df_bronze = spark.read.parquet("s3a://etl-data/data-lake/bronze/category")
 df_bronze.createOrReplaceTempView("categories_stream")
 
 df_silver = spark.sql("""
-    SELECT
+    SELECT DISTINCT
         hex(md5((product_category_name))) AS product_category_id,
         trim(lower(product_category_name)) AS product_category_name,
         TRIM(LOWER(product_category_name_english)) AS product_category_name_english,
