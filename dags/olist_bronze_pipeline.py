@@ -13,6 +13,10 @@ def spark_task(task_id, script_path):
         verbose=True,
         packages="org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262",
         conf={
+            "spark.executor.memory": "512M",
+            "spark.driver.memory": "512M",
+            "spark.executor.cores": "1",
+            "spark.sql.shuffle.partitions": "1",
             "spark.hadoop.fs.s3a.endpoint": "http://minio:9000",
             "spark.hadoop.fs.s3a.access.key": "minio",
             "spark.hadoop.fs.s3a.secret.key": "minio123",
