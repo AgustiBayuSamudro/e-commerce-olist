@@ -62,6 +62,7 @@ Struktur schema pada engine Trino yang mengelola data di MinIO:
 3. **Jalankan airflow**
 ![GitHub Logo](assets/images/run-airflow.jpeg)
 4. **Buat db metabase**
+Configurasi metabase:
 ![GitHub Logo](assets/images/dbmetabase.jpeg)
 5. **Jalankan query sql pada folder assets di trino engine**
     ``` bash
@@ -74,11 +75,15 @@ Struktur schema pada engine Trino yang mengelola data di MinIO:
                 └── gold/
 6. **Cek view diagram**
 * **bronze**
+Hasil result schema bronze.
 ![GitHub Logo](assets/images/bronze.jpeg)
 * **silver**
+Hasil result schema silver.
 ![GitHub Logo](assets/images/silver.jpeg)
 * **gold**
+Hasil result schema gold.
 ![GitHub Logo](assets/images/gold.jpeg)
 7. **Visualisasi Metabase**
+Hasil result schema metabase trino.
 ![GitHub Logo](assets/images/visualisasi.jpeg)
 8. **Selamat sudah berhasil melakukan pemrosesan data**
