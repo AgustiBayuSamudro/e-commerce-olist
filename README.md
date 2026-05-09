@@ -52,6 +52,7 @@ Pastikan kamu sudah menginstall **Docker** dan **Docker Compose** di laptopmu.
     http://103.196.155.168:8082/
 ![GitHub Logo](assets/images/metabase.jpeg)
 5. **Buat scema pada trino engine**
+Struktur schema pada engine Trino yang mengelola data di MinIO:
 ![GitHub Logo](assets/images/schema.jpeg)
 ## 🧪 Cara Pengujian (Testing)
 1. **Buat data-lake minio**
